@@ -1,0 +1,88 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Список задач{% endblock %}
+{% block body %}
+    <div class="container">
+        <div>
+            <button type="button" id="addTask" class="btn btn-primary">Добавить задачу</button>
+        </div>
+        {% if countPages==0 %}
+        <div>Нет задач</div>
+        {% else %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">email</th>
+                <th scope="col">Описание</th>
+                <th scope="col" width="120"><a href="{{ path('indexPage',{page:1,order:toOrder}) }}">Статус</a>
+                </th>
+                <th scope="col">Отедактировано администратором</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set n = 0 %}
+            {% for task in tasks %}
+                {% set n = n + 1 %}
+                <tr>
+                    <th scope="row">{{ n }}</th>
+                    <td>{{ task.email }}</td>
+                    <td>{{ task.description }}</td>
+                    {% if task.status==0 %}
+                        <td>в ожидании</td>
+                    {% elseif task.status==1 %}
+                        <td>выполнена</td>
+                    {% endif %}
+                    <td align="center">{% if task.edited %}<i class="fa fa-check" aria-hidden="true"></i>{% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-xs-center">
+            <nav aria-label="..." class="text-xs-center">
+                <ul class="pagination justify-content-center pagination-centered">
+                    <li class="page-item">
+                        <a class="page-link" href="{% if currentPage<=1 %}
+                                                #
+                                                {% else %}
+                                                {{ pages[currentPage-2].uri }}
+                                                {% endif %}" tabindex="-1" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    {% for i in 1..countPages %}
+                        {% if currentPage == i %}
+                            <li class="page-item active">
+                                <a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a>
+                            </li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="{{ pages[i-1].uri }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item">
+                        <a class="page-link" href="{% if currentPage>=countPages %}
+                                                #
+                                                {% else %}
+                                                {{ pages[currentPage].uri }}
+                                                {% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+    <script>
+        document.getElementById("addTask").addEventListener("click", addTask);
+
+        function addTask() {
+            location.href = "{{ path('addTask') }}";
+        }
+
+
+    </script>
+{% endblock %}
